@@ -52,4 +52,4 @@ def preprocess_data(df: pd.DataFrame, text_column: str = 'Interaction content'):
     y3 = le3.fit_transform(df['y3'].astype(str))
     y4 = le4.fit_transform(df['y4'].astype(str))
 
-    return X_vec, y2, y3, y4, vectorizer, le2, le3, le4
+    return X_vec, y2, y3, y4, vectorizer,le2,le3,le4
