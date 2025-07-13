@@ -5,9 +5,9 @@ from sklearn.linear_model import LogisticRegression
 
 class ChainedModel:
     def __init__(self):
-        self.model2 = LogisticRegression(max_iter=200)
-        self.model3 = LogisticRegression(max_iter=200)
-        self.model4 = LogisticRegression(max_iter=200)
+        self.model2 = LogisticRegression(max_iter=1000)
+        self.model3 = LogisticRegression(max_iter=1000)
+        self.model4 = LogisticRegression(max_iter=1000)
 
     def fit(self, X_vec, y2, y3, y4):
         print("[Stage 1] Training Type 2 Model on X...")
