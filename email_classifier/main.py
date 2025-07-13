@@ -8,6 +8,7 @@ random.seed(seed)
 np.random.seed(seed)
 #////
 print("hello")
+print("hamza")
 def load_data():
     #load the input data
     df = get_input_data()
