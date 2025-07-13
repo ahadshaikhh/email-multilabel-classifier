@@ -220,3 +220,28 @@ def translate_to_en(texts:list[str]):
             #print(text)
             #print(text_en)
     return text_en_l
+
+
+import re
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+def clean_text(text):
+    """
+    Cleans text: lowercases, removes special characters and numbers.
+    """
+    text = text.lower()
+    text = re.sub(r'[^a-zA-Z0-9 ]', '', text)
+    return text
+
+def preprocess_data(df):
+    """
+    Cleans text and vectorizes using TF-IDF.
+    Returns:
+        X_vec: vectorized features
+        y2, y3, y4: labels for multi-label classification
+        vectorizer: fitted TfidfVectorizer object
+    """
+    df['clean_text'] = df['Text'].apply(clean_text)
+    vectorizer = TfidfVectorizer(max_features=1000)
+    X_vec = vectorizer.fit_transform(df['clean_text'])
+    return X_vec, df['Type 2'], df['Type 3'], df['Type 4'], vectorizer
