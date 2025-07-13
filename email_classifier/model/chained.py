@@ -1,36 +1,39 @@
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 import numpy as np
-import joblib
+
+from sklearn.linear_model import LogisticRegression
 
 class ChainedModel:
-    def _init_(self):
-        self.model2 = RandomForestClassifier()
-        self.model3 = RandomForestClassifier()
-        self.model4 = RandomForestClassifier()
+    def __init__(self):
+        self.model2 = LogisticRegression(max_iter=500, solver='lbfgs')
+        self.model3 = LogisticRegression(max_iter=500, solver='lbfgs')
+        self.model4 = LogisticRegression(max_iter=500, solver='lbfgs')
 
     def fit(self, X_vec, y2, y3, y4):
-        # Train on Type 2
         self.model2.fit(X_vec, y2)
         y2_pred = self.model2.predict(X_vec)
 
-        # Train on Type 3 using X + y2_pred
-        X3 = np.hstack([X_vec.toarray(), y2_pred.reshape(-1, 1)])
+        X3 = self._combine_features(X_vec, y2_pred)
         self.model3.fit(X3, y3)
         y3_pred = self.model3.predict(X3)
 
-        # Train on Type 4 using X + y2_pred + y3_pred
-        X4 = np.hstack([X3, y3_pred.reshape(-1, 1)])
+        X4 = self._combine_features(X3, y3_pred)
         self.model4.fit(X4, y4)
 
     def predict(self, X_vec):
         y2_pred = self.model2.predict(X_vec)
-        X3 = np.hstack([X_vec.toarray(), y2_pred.reshape(-1, 1)])
+        X3 = self._combine_features(X_vec, y2_pred)
         y3_pred = self.model3.predict(X3)
-        X4 = np.hstack([X3, y3_pred.reshape(-1, 1)])
+        X4 = self._combine_features(X3, y3_pred)
         y4_pred = self.model4.predict(X4)
         return y2_pred, y3_pred, y4_pred
 
-    def save_models(self, path="outputs/"):
-        joblib.dump(self.model2, path + "model2.joblib")
-        joblib.dump(self.model3, path + "model3.joblib")
-        joblib.dump(self.model4, path + "model4.joblib")
+    def _combine_features(self, X, y_pred):
+        y_pred = y_pred.reshape(-1, 1) if len(y_pred.shape) == 1 else y_pred
+
+        # If X is a sparse matrix, convert to dense
+        if hasattr(X, 'toarray'):
+            X = X.toarray()
+
+        return np.hstack((X, y_pred))
+
